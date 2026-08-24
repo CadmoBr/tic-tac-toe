@@ -114,3 +114,46 @@ create_board_ui()
 
 # Título
 st.title("🎮 Jogo da Velha")
+
+# Verificar se é turno do bot
+if (st.session_state.game_mode == "bot" and 
+    st.session_state.current_player == "O" and 
+    not st.session_state.game_over):
+    
+    st.info("🤖 Bot pensando...")
+    
+    def make_bot_move():
+        import time
+        time.sleep(0.5)  # Pequeno delay para realismo
+        
+        row, col = bot_move()
+        if row is not None:
+            st.session_state.board[row][col] = "O"
+            st.session_state.winner = check_winner(st.session_state.board)
+            
+            if st.session_state.winner == "draw":
+                st.session_state.scores["draw"] += 1
+                st.session_state.game_over = True
+            elif st.session_state.winner:
+                st.session_state.scores[st.session_state.winner] += 1
+                st.session_state.game_over = True
+            else:
+                st.session_state.current_player = "X"
+    
+    make_bot_move()
+
+# Mensagem de fim de jogo
+if st.session_state.game_over:
+    st.divider()
+    if st.session_state.winner == "draw":
+        st.warning("🤝 Empate!")
+    else:
+        st.success(f"🏆 Jogador {st.session_state.winner} venceu!")
+    
+    if st.button("🔄 Jogar Novamente", use_container_width=True):
+        reset_game()
+
+# Informações do jogo
+st.divider()
+if not st.session_state.game_over:
+    st.info(f"🎯 Vez do jogador: **{st.session_state.current_player}**")
