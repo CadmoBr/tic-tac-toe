@@ -24,12 +24,6 @@ if "scores" not in st.session_state:
     st.session_state.scores = {"X": 0, "O": 0, "draw": 0}
 if "game_mode" not in st.session_state:
     st.session_state.game_mode = "human"
-if "click_pending" not in st.session_state:
-    st.session_state.click_pending = False
-if "clicked_row" not in st.session_state:
-    st.session_state.clicked_row = None
-if "clicked_col" not in st.session_state:
-    st.session_state.clicked_col = None
 
 def check_winner(board):
     for row in board:
@@ -51,9 +45,6 @@ def reset_game():
     st.session_state.current_player = "X"
     st.session_state.game_over = False
     st.session_state.winner = None
-    st.session_state.click_pending = False
-    st.session_state.clicked_row = None
-    st.session_state.clicked_col = None
 
 def bot_move():
     empty_cells = [(r, c) for r in range(3) for c in range(3) if st.session_state.board[r][c] == ""]
@@ -100,27 +91,24 @@ with col3:
 
 st.divider()
 
-if st.session_state.click_pending:
-    make_move(st.session_state.clicked_row, st.session_state.clicked_col)
-    st.session_state.click_pending = False
-    st.rerun()
-
-st.subheader("Tabuleiro")
-
-for row in range(3):
-    cols = st.columns(3)
-    for col in range(3):
-        cell_value = st.session_state.board[row][col]
-        button_label = cell_value if cell_value else " "
-        
-        if cols[col].button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
-            st.session_state.click_pending = True
-            st.session_state.clicked_row = row
-            st.session_state.clicked_col = col
-            st.rerun()
+@st.fragment
+def render_board():
+    st.subheader("Tabuleiro")
     
-    if row < 2:
-        st.divider()
+    for row in range(3):
+        cols = st.columns(3)
+        for col in range(3):
+            cell_value = st.session_state.board[row][col]
+            button_label = cell_value if cell_value else " "
+            
+            if cols[col].button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
+                make_move(row, col)
+                st.rerun(scope="fragment")
+        
+        if row < 2:
+            st.divider()
+
+render_board()
 
 if (st.session_state.game_mode == "bot" and 
     st.session_state.current_player == "O" and 
