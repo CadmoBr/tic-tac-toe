@@ -24,8 +24,6 @@ if "scores" not in st.session_state:
     st.session_state.scores = {"X": 0, "O": 0, "draw": 0}
 if "game_mode" not in st.session_state:
     st.session_state.game_mode = "human"
-if "move_made" not in st.session_state:
-    st.session_state.move_made = False
 
 def check_winner(board):
     for row in board:
@@ -47,13 +45,27 @@ def reset_game():
     st.session_state.current_player = "X"
     st.session_state.game_over = False
     st.session_state.winner = None
-    st.session_state.move_made = False
 
 def bot_move():
     empty_cells = [(r, c) for r in range(3) for c in range(3) if st.session_state.board[r][c] == ""]
     if empty_cells:
         return random.choice(empty_cells)
     return None
+
+def make_move(row, col):
+    if st.session_state.game_over or st.session_state.board[row][col] != "":
+        return
+    st.session_state.board[row][col] = st.session_state.current_player
+    st.session_state.winner = check_winner(st.session_state.board)
+    
+    if st.session_state.winner == "draw":
+        st.session_state.scores["draw"] += 1
+        st.session_state.game_over = True
+    elif st.session_state.winner:
+        st.session_state.scores[st.session_state.winner] += 1
+        st.session_state.game_over = True
+    else:
+        st.session_state.current_player = "O" if st.session_state.current_player == "X" else "X"
 
 st.subheader("Modo de Jogo")
 col1, col2 = st.columns(2)
@@ -81,32 +93,12 @@ st.divider()
 
 st.subheader("Tabuleiro")
 
-if st.session_state.move_made:
-    st.session_state.move_made = False
-    st.rerun()
-
 for row in range(3):
     cols = st.columns(3)
     for col in range(3):
         cell_value = st.session_state.board[row][col]
         button_label = cell_value if cell_value else " "
-        
-        if cols[col].button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
-            if not st.session_state.game_over and st.session_state.board[row][col] == "":
-                st.session_state.board[row][col] = st.session_state.current_player
-                st.session_state.winner = check_winner(st.session_state.board)
-                
-                if st.session_state.winner == "draw":
-                    st.session_state.scores["draw"] += 1
-                    st.session_state.game_over = True
-                elif st.session_state.winner:
-                    st.session_state.scores[st.session_state.winner] += 1
-                    st.session_state.game_over = True
-                else:
-                    st.session_state.current_player = "O" if st.session_state.current_player == "X" else "X"
-                
-                st.session_state.move_made = True
-                st.rerun()
+        cols[col].button(button_label, key=f"cell_{row}_{col}", use_container_width=True, on_click=make_move, args=[row, col])
     
     if row < 2:
         st.divider()
@@ -120,19 +112,7 @@ if (st.session_state.game_mode == "bot" and
     
     row, col = bot_move()
     if row is not None:
-        st.session_state.board[row][col] = "O"
-        st.session_state.winner = check_winner(st.session_state.board)
-        
-        if st.session_state.winner == "draw":
-            st.session_state.scores["draw"] += 1
-            st.session_state.game_over = True
-        elif st.session_state.winner:
-            st.session_state.scores[st.session_state.winner] += 1
-            st.session_state.game_over = True
-        else:
-            st.session_state.current_player = "X"
-        
-        st.session_state.move_made = True
+        make_move(row, col)
         st.rerun()
 
 if st.session_state.game_over:
