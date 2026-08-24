@@ -99,9 +99,9 @@ def create_board_ui():
             cell_value = st.session_state.board[row][col]
             button_label = cell_value if cell_value else " "
             
-            def on_click(r=row, c=col):
-                if not st.session_state.game_over and st.session_state.board[r][c] == "":
-                    st.session_state.board[r][c] = st.session_state.current_player
+            if st.button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
+                if not st.session_state.game_over and st.session_state.board[row][col] == "":
+                    st.session_state.board[row][col] = st.session_state.current_player
                     st.session_state.winner = check_winner(st.session_state.board)
                     
                     if st.session_state.winner == "draw":
@@ -112,10 +112,7 @@ def create_board_ui():
                         st.session_state.game_over = True
                     else:
                         st.session_state.current_player = "O" if st.session_state.current_player == "X" else "X"
-            
-            with cell_cols[col]:
-                if st.button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
-                    on_click()
+                    st.rerun()
         
         if row < 2:
             st.divider()
@@ -131,25 +128,24 @@ if (st.session_state.game_mode == "bot" and
     
     st.info("🤖 Bot pensando...")
     
-    def make_bot_move():
-        import time
-        time.sleep(0.5)  # Pequeno delay para realismo
-        
-        row, col = bot_move()
-        if row is not None:
-            st.session_state.board[row][col] = "O"
-            st.session_state.winner = check_winner(st.session_state.board)
-            
-            if st.session_state.winner == "draw":
-                st.session_state.scores["draw"] += 1
-                st.session_state.game_over = True
-            elif st.session_state.winner:
-                st.session_state.scores[st.session_state.winner] += 1
-                st.session_state.game_over = True
-            else:
-                st.session_state.current_player = "X"
+    import time
+    time.sleep(0.5)
     
-    make_bot_move()
+    row, col = bot_move()
+    if row is not None:
+        st.session_state.board[row][col] = "O"
+        st.session_state.winner = check_winner(st.session_state.board)
+        
+        if st.session_state.winner == "draw":
+            st.session_state.scores["draw"] += 1
+            st.session_state.game_over = True
+        elif st.session_state.winner:
+            st.session_state.scores[st.session_state.winner] += 1
+            st.session_state.game_over = True
+        else:
+            st.session_state.current_player = "X"
+    
+    st.rerun()
 
 # Mensagem de fim de jogo
 if st.session_state.game_over:
