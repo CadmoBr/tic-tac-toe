@@ -4,6 +4,16 @@ import random
 # Configuração da página
 st.set_page_config(page_title="Jogo da Velha", layout="centered")
 
+# Versão da aplicação
+VERSION = "1.0.0"
+
+# Título e versão
+col1, col2 = st.columns([3, 1])
+with col1:
+    st.title("🎮 Jogo da Velha")
+with col2:
+    st.markdown(f"<small>Versão {VERSION}</small>", unsafe_allow_html=True)
+
 # Inicializar estado do jogo
 if "board" not in st.session_state:
     st.session_state.board = [["" for _ in range(3)] for _ in range(3)]
@@ -112,8 +122,7 @@ def create_board_ui():
 
 create_board_ui()
 
-# Título
-st.title("🎮 Jogo da Velha")
+
 
 # Verificar se é turno do bot
 if (st.session_state.game_mode == "bot" and 
