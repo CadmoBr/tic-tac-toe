@@ -24,6 +24,8 @@ if "scores" not in st.session_state:
     st.session_state.scores = {"X": 0, "O": 0, "draw": 0}
 if "game_mode" not in st.session_state:
     st.session_state.game_mode = "human"
+if "board_key" not in st.session_state:
+    st.session_state.board_key = 0
 
 def check_winner(board):
     for row in board:
@@ -45,6 +47,7 @@ def reset_game():
     st.session_state.current_player = "X"
     st.session_state.game_over = False
     st.session_state.winner = None
+    st.session_state.board_key += 1
 
 def bot_move():
     empty_cells = [(r, c) for r in range(3) for c in range(3) if st.session_state.board[r][c] == ""]
@@ -52,7 +55,7 @@ def bot_move():
         return random.choice(empty_cells)
     return None
 
-def make_move(row, col):
+def handle_click(row, col):
     if st.session_state.game_over or st.session_state.board[row][col] != "":
         return
     st.session_state.board[row][col] = st.session_state.current_player
@@ -91,24 +94,25 @@ with col3:
 
 st.divider()
 
-@st.fragment
-def render_board():
-    st.subheader("Tabuleiro")
-    
+st.subheader("Tabuleiro")
+
+# Container para o tabuleiro
+board_container = st.container()
+
+with board_container:
     for row in range(3):
         cols = st.columns(3)
         for col in range(3):
-            cell_value = st.session_state.board[row][col]
-            button_label = cell_value if cell_value else " "
+            current_value = st.session_state.board[row][col]
+            label = current_value if current_value else " "
             
-            if cols[col].button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
-                make_move(row, col)
-                st.rerun(scope="fragment")
+            if cols[col].button(label, key=f"cell_{row}_{col}_{st.session_state.board_key}", use_container_width=True):
+                handle_click(row, col)
+                st.session_state.board_key += 1
+                st.rerun()
         
         if row < 2:
             st.divider()
-
-render_board()
 
 if (st.session_state.game_mode == "bot" and 
     st.session_state.current_player == "O" and 
@@ -119,7 +123,8 @@ if (st.session_state.game_mode == "bot" and
     
     row, col = bot_move()
     if row is not None:
-        make_move(row, col)
+        handle_click(row, col)
+        st.session_state.board_key += 1
         st.rerun()
 
 if st.session_state.game_over:
