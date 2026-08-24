@@ -52,5 +52,65 @@ def bot_move():
         return random.choice(empty_cells)
     return None
 
+# Seleção do modo de jogo
+st.subheader("Modo de Jogo")
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("👤 vs 👤", use_container_width=True):
+        st.session_state.game_mode = "human"
+        reset_game()
+with col2:
+    if st.button("👤 vs 🤖", use_container_width=True):
+        st.session_state.game_mode = "bot"
+        reset_game()
+
+st.divider()
+
+# Placar
+st.subheader("📊 Placar")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Jogador X", st.session_state.scores["X"])
+with col2:
+    st.metric("Jogador O", st.session_state.scores["O"])
+with col3:
+    st.metric("Empates", st.session_state.scores["draw"])
+
+st.divider()
+
+# Tabuleiro
+st.subheader("Tabuleiro")
+
+def create_board_ui():
+    cols = st.columns(3)
+    for row in range(3):
+        cell_cols = st.columns(3)
+        for col in range(3):
+            cell_value = st.session_state.board[row][col]
+            button_label = cell_value if cell_value else " "
+            
+            def on_click(r=row, c=col):
+                if not st.session_state.game_over and st.session_state.board[r][c] == "":
+                    st.session_state.board[r][c] = st.session_state.current_player
+                    st.session_state.winner = check_winner(st.session_state.board)
+                    
+                    if st.session_state.winner == "draw":
+                        st.session_state.scores["draw"] += 1
+                        st.session_state.game_over = True
+                    elif st.session_state.winner:
+                        st.session_state.scores[st.session_state.winner] += 1
+                        st.session_state.game_over = True
+                    else:
+                        st.session_state.current_player = "O" if st.session_state.current_player == "X" else "X"
+            
+            with cell_cols[col]:
+                if st.button(button_label, key=f"cell_{row}_{col}", use_container_width=True):
+                    on_click()
+        
+        if row < 2:
+            st.divider()
+
+create_board_ui()
+
 # Título
 st.title("🎮 Jogo da Velha")
