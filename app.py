@@ -2,20 +2,16 @@ import streamlit as st
 import random
 import time
 
-# Configuração da página
 st.set_page_config(page_title="Jogo da Velha", layout="centered")
 
-# Versão da aplicação
 VERSION = "1.0.0"
 
-# Título e versão
 col1, col2 = st.columns([3, 1])
 with col1:
     st.title("🎮 Jogo da Velha")
 with col2:
     st.markdown(f"<small>Versão {VERSION}</small>", unsafe_allow_html=True)
 
-# Inicializar estado do jogo
 if "board" not in st.session_state:
     st.session_state.board = [["" for _ in range(3)] for _ in range(3)]
 if "current_player" not in st.session_state:
@@ -28,11 +24,10 @@ if "scores" not in st.session_state:
     st.session_state.scores = {"X": 0, "O": 0, "draw": 0}
 if "game_mode" not in st.session_state:
     st.session_state.game_mode = "human"
-if "last_click" not in st.session_state:
-    st.session_state.last_click = None
+if "move_made" not in st.session_state:
+    st.session_state.move_made = False
 
 def check_winner(board):
-    """Verifica vencedor"""
     for row in board:
         if row[0] == row[1] == row[2] and row[0] != "":
             return row[0]
@@ -52,7 +47,7 @@ def reset_game():
     st.session_state.current_player = "X"
     st.session_state.game_over = False
     st.session_state.winner = None
-    st.session_state.last_click = None
+    st.session_state.move_made = False
 
 def bot_move():
     empty_cells = [(r, c) for r in range(3) for c in range(3) if st.session_state.board[r][c] == ""]
@@ -86,6 +81,10 @@ st.divider()
 
 st.subheader("Tabuleiro")
 
+if st.session_state.move_made:
+    st.session_state.move_made = False
+    st.rerun()
+
 for row in range(3):
     cols = st.columns(3)
     for col in range(3):
@@ -106,7 +105,7 @@ for row in range(3):
                 else:
                     st.session_state.current_player = "O" if st.session_state.current_player == "X" else "X"
                 
-                st.session_state.last_click = (row, col)
+                st.session_state.move_made = True
                 st.rerun()
     
     if row < 2:
@@ -133,6 +132,7 @@ if (st.session_state.game_mode == "bot" and
         else:
             st.session_state.current_player = "X"
         
+        st.session_state.move_made = True
         st.rerun()
 
 if st.session_state.game_over:
