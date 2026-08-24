@@ -1,4 +1,4 @@
-# Jogo da Velha - Exemplo Kubernetes
+# Jogo da Velha
 
 Exemplo educativo de aplicação web containerizada para ensino de DevOps.
 
@@ -6,7 +6,6 @@ Exemplo educativo de aplicação web containerizada para ensino de DevOps.
 
 - **Frontend:** Streamlit (Python)
 - **Container:** Docker
-- **Orquestração:** Kubernetes
 
 ## Rodando Localmente
 
@@ -24,41 +23,13 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Deploy no Kubernetes
-
-### 1. Build da imagem
-
-```bash
-docker build -t tic-tac-toe:latest .
-```
-
-### 2. Aplicar manifests
-
-```bash
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
-# Opcional:
-kubectl apply -f k8s/ingress.yaml
-```
-
-### 3. Verificar status
-
-```bash
-kubectl get pods -l app=tic-tac-toe
-kubectl get svc tic-tac-toe-service
-```
-
 ## Estrutura do Projeto
 
 ```
 ├── app.py              # Aplicação Streamlit
 ├── requirements.txt    # Dependências Python
 ├── Dockerfile         # Imagem Docker
-├── docker-compose.yml # Composição local
-└── k8s/
-    ├── deployment.yaml  # Deployment K8s
-    ├── service.yaml     # Service K8s
-    └── ingress.yaml     # Ingress K8s (opcional)
+└── docker-compose.yml # Composição local
 ```
 
 ## Funcionalidades
@@ -67,4 +38,3 @@ kubectl get svc tic-tac-toe-service
 - ✅ Jogo vs Bot (IA simples)
 - ✅ Placar persistente
 - ✅ Interface interativa
-- ✅ Health checks para Kubernetes
