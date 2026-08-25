@@ -9,6 +9,7 @@ spec:
     app: tic-tac-toe
   ports:
   - protocol: TCP
-    port: 80           # Porta do service
+    port: 8080       # Porta do service
     targetPort: 8501   # Porta do container
+    nodePort: 30080
   type: NodePort       # Alterar para LoadBalancer se necessário

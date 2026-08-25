@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: tic-tac-toe
-        image: tic-tac-toe:latest  # Substituir com imagem do registry
+        image: profdiegoluispires/tic-tac-toe:latest  # Substituir com imagem do registry
         ports:
         - containerPort: 8501
           name: http

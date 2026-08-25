@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: tic-tac-toe.local  # Substituir com domínio real
+  - host: localhost  # Substituir com domínio real
     http:
       paths:
       - path: /
@@ -18,4 +18,4 @@ spec:
           service:
             name: tic-tac-toe-service
             port:
-              number: 80
+              number: 8080
