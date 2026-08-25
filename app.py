@@ -42,15 +42,19 @@ def check_winner(board):
         return "draw"
     return None
 
-def reset_game():
-    st.session_state.board = [["" for _ in range(3)] for _ in range(3)]
-    st.session_state.current_player = "X"
-    st.session_state.game_over = False
-    st.session_state.winner = None
-    st.session_state.board_key += 1
+def reset_game(state=None):
+    if state is None:
+        state = st.session_state
+    state.board = [["" for _ in range(3)] for _ in range(3)]
+    state.current_player = "X"
+    state.game_over = False
+    state.winner = None
+    state.board_key += 1
 
-def bot_move():
-    empty_cells = [(r, c) for r in range(3) for c in range(3) if st.session_state.board[r][c] == ""]
+def bot_move(board=None):
+    if board is None:
+        board = st.session_state.board
+    empty_cells = [(r, c) for r in range(3) for c in range(3) if board[r][c] == ""]
     if empty_cells:
         return random.choice(empty_cells)
     return None
