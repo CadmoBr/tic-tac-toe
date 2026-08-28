@@ -33,6 +33,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     # a condição acima garante que Pull Requests NUNCA publicam imagem —
     # só um push direto na main dispara a publicação no Docker Hub
+    envoriments: DOCKERHUB
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
