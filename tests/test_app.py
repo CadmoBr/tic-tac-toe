@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '/mnt/c/Projects/ppi/tic-tac-toe')
+
 from app import check_winner, bot_move, reset_game
 
 
@@ -44,7 +47,7 @@ def test_check_winner_incomplete():
 def test_bot_move():
     board = [["X", "", ""], ["", "O", ""], ["", "", ""]]
     result = bot_move(board)
-    assert result in [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)]
+    assert result in [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]
 
 
 def test_bot_move_no_empty():
