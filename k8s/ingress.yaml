@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tic-tac-toe-ingress
+spec:
+  ingressClassName: traefik    # controlador de Ingress que vai processar as regras —
+                                 # o k3d já vem com o Traefik instalado por padrão
+  rules:
+  - host: localhost              # em produção, seria um domínio real
+    http:
+      paths:
+      - path: /                   # caminho da URL a interceptar
+        pathType: Prefix           # "Prefix" = tudo que começa com "/"
+        backend:
+          service:
+            name: tic-tac-toe-service    # para qual Service encaminhar
+            port:
+              number: 8501               # em qual porta do Service

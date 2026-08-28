@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tic-tac-toe
+  labels:
+    app: tic-tac-toe
+spec:
+  replicas: 4                       # aqui são 2 réplicas, não 3 — não há truque visual
+  selector:                          # de load balancing aqui, é só alta disponibilidade
+    matchLabels:
+      app: tic-tac-toe
+  template:
+    metadata:
+      labels:
+        app: tic-tac-toe
+    spec:
+      containers:
+      - name: tic-tac-toe
+        image: profdiegoluispires/tic-tac-toe:latest
+        imagePullPolicy: IfNotPresent   # usa a imagem local importada, sem tentar baixar
+        envFrom:                        # injeta TODAS as chaves do ConfigMap
+        - configMapRef:                  # como variáveis de ambiente de uma vez
+            name: tic-tac-toe-config
+        ports:
+        - containerPort: 8501            # Streamlit roda na porta 8501, não 80
+          name: http
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health          # endpoint de saúde do próprio Streamlit
+            port: 8501
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 5
+          periodSeconds: 5
