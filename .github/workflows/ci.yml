@@ -2,9 +2,10 @@ name: CI/CD - Tic Tac Toe
 
 on:
   push:
-    branches: [main]
+    branches: [ main, "feature/**" ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
+  workflow_dispatch: # Permite disparar manualmente pela interface do GitHub
 
 jobs:
   test:
